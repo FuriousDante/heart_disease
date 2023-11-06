@@ -49,10 +49,10 @@ def main():
     mail_dict = {"Bank":(0,0,0), "Credit":(1,0,0), "Electronic":(0,1,0), "Mailed": (0,0,1)}
     
 
-    st.title("Telco Churn Prediction")
+    st.title("Heart Disease Classification Tool")
     html_temp = """
     <div style="background-color:#b3db86;padding:8px">
-    <h2 style="color:black;text-align:center;">Predicting Customer Churn</h2>
+    <h2 style="color:black;text-align:center;">Predicting Heart Diease</h2>
     </div>
     """
     st.markdown(html_temp,unsafe_allow_html=True)
