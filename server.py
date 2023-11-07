@@ -1,8 +1,6 @@
 import streamlit as st 
 import pickle
 
-print('Successfully executed ')
-
 model = pickle.load(open('model.pkl', 'rb'))
 
 def predict_pro(list1):
@@ -18,37 +16,27 @@ def predict_pro(list1):
     
     return prediction
 
-# def processing(l):
-#     # Your dictionary
-#     category_to_binary = {'Male': 1, 
-#                            'Fiber Optic': (0, 1), 'No': (0, 0)}
-
-# # Extract the tuple for 'DSL'
-# dsl_tuple = category_to_binary['DSL']
-
-# print(dsl_tuple)
-# print("Inside Processing")
-# print(l)
-
 def main():
+
+    from sklearn.preprocessing import MinMaxScaler
+    import pandas as pd
+    bpscaler = MinMaxScaler()
+    cholscaler = MinMaxScaler()
+    thalachcaler = MinMaxScaler()
+    oldpeakscaler = MinMaxScaler()
+
+    data= pd.read_csv("data-problem-statement-1-heart-disease.csv")
+
+    bpscaler.fit(data["trestbps"].to_numpy().reshape(-1,1))
+    cholscaler.fit(data["chol"].to_numpy().reshape(-1,1))
+    thalachcaler.fit(data["thalach"].to_numpy().reshape(-1,1))
+    oldpeakscaler.fit(data["oldpeak"].to_numpy().reshape(-1,1))
 
     pred_arr = []
     gender_dict = {"Male":1,"Female":0}
     yes_no_dict = {"Yes":1,"No":0}
 
-
-    lines_dict = {"Yes":(1,0), "No":(0,1), "NA":(0,0)}
-    internet_service_dict = {"DSL":(1,0), "Fibre Optic":(0,1), "No":(0,0)}
-    online_security_dict = {"Yes":(0,1), "No":(1,0), "NA":(1,0)} 
-    online_backup_dict = {"Yes":(0,1), "No":(1,0), "NA":(1,0)}
-    device_protection_dict = {"Yes":(1,0), "No":(1,0), "NA":(1,0)}
-    tech_support_dict = {"Yes":(1,0), "No":(1,0), "NA":(1,0)}
-    stream_tv_dict = {"Yes":(0,1), "No":(1,0), "NA":(1,0)}
-    stream_movies_dict = {"Yes":(0,1), "No":(1,0), "NA":(1,0)}
-    contract_dict = {"Monthly":(0,0), "One":(1,0), "Two":(0,1)}
-    mail_dict = {"Bank":(0,0,0), "Credit":(1,0,0), "Electronic":(0,1,0), "Mailed": (0,0,1)}
     
-
     st.title("Heart Disease Classification Tool")
     html_temp = """
     <div style="background-color:#b3db86;padding:8px">
@@ -69,13 +57,17 @@ def main():
     pred_arr.extend([cp])
     # print(pred_arr)
     
-    trestbps = st.slider("Enter your trestbps", min_value=0, max_value=200)
-    pred_arr.extend([trestbps])
+    trestbps = st.slider("Enter your Resting Blood Pressure", min_value=0, max_value=200)
+    # pred_arr.extend([trestbps])
+    v1 = bpscaler.transform([[trestbps]])
+    pred_arr.extend(v1[0])
 
-    chol= st.slider("Enter your chol", min_value=0, max_value=1000)
-    pred_arr.extend([chol])
+    chol= st.slider("Enter your Cholestrol level", min_value=0, max_value=1000)
+    # pred_arr.extend([chol])
+    v2 = cholscaler.transform([[chol]])
+    pred_arr.extend(v2[0])
 
-    fbs = st.selectbox("Select fbs", ("Yes", "No"))
+    fbs = st.selectbox("Is your Fasting Bllod Sugar > 120?", ("Yes", "No"))
     pred_arr.extend([yes_no_dict[fbs]])
     # print(pred_arr)
 
@@ -83,23 +75,27 @@ def main():
     pred_arr.extend([restecg])
     # print(pred_arr)
 
-    thalach = st.slider("Select your thalash level", min_value=0, max_value=500)
-    pred_arr.extend([thalach])
+    thalach = st.slider("Enter your Maximum Heart rate achieved", min_value=0, max_value=500)
+    # pred_arr.extend([thalach])
+    v3 = thalachcaler.transform([[thalach]])
+    pred_arr.extend(v3[0])
     # print(pred_arr)
 
-    exang = st.selectbox("Do you have exang",("Yes", "No"))
+    exang = st.selectbox("Do you have Exercise induced angina",("Yes", "No"))
     pred_arr.extend([yes_no_dict[exang]])
     # print(pred_arr)
 
     oldpeak = st.slider("Enter your old peak", min_value=0, max_value=500)
-    pred_arr.extend([oldpeak])
+    # pred_arr.extend([oldpeak])
+    v4 = oldpeakscaler.transform([[oldpeak]])
+    pred_arr.extend(v4[0])
     # print(pred_arr)
 
-    slope = st.slider("Enter your slope", min_value=0, max_value=2)
+    slope = st.slider("Enter ythe level of slope", min_value=0, max_value=2)
     pred_arr.extend([slope])
     # print(pred_arr)
 
-    ca = st.slider("Enter your ca", min_value=0, max_value=3)
+    ca = st.slider("Enter the number of major vessesls colored by flurosopy", min_value=0, max_value=3)
     pred_arr.extend([ca])
     # print(pred_arr)
 
@@ -116,8 +112,11 @@ def main():
         print("Printing result")
         print(result)
         
-        st.success('The output is {}'.format(result))
+        if result=="yes":
+                st.error('The patient is suffering from a heart disease!')
+        else:
+             st.success("the patient is fine!", icon="✅")
     if st.button("About"):
-        st.text("Built with Streamlit, By Mayur Parab and Siddharth Jadhwani")
+        st.text("Best model used is GaussianNaivebayes, with approx 89% accuracy on test data")
 
 main()

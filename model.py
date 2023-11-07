@@ -11,10 +11,7 @@ import pickle
 from sklearn.preprocessing import MinMaxScaler
 
 from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
+
 
 def model_building(X, y, test, model, params = None, k = 1) :
     
@@ -50,27 +47,6 @@ def model_evaluation(y_train, pred_train, y_test, pred_test) :
     print(confusion_matrix(y_test, pred_test))
     print("F1 Score: ",f1_score(y_test, pred_test,average="macro"))
 
-def plot_roc_curve(model,X_test,y_test):
-    # Predict probabilities on the test set
-    y_prob = model.predict_proba(X_test)[:, 1]
-
-    # Calculate ROC curve
-    fpr, tpr, thresholds = roc_curve(y_test, y_prob)
-
-    # Calculate the AUC (Area Under the Curve)
-    roc_auc = roc_auc_score(y_test, y_prob)
-
-    # Plot the ROC curve
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='b', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
-    plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
-    plt.legend(loc='lower right')
-    plt.show()
 
 data_raw = pd.read_csv("data-problem-statement-1-heart-disease.csv")
 
@@ -104,6 +80,6 @@ for model in model_list:
         print("Unable to create a model for {0}".format(model))
     model_evaluation(y_train, pred_train, y_test, pred_test)
 
-pickle.dump(model, open('model.pkl','wb'))
+pickle.dump(model, open('finalmodel.pkl','wb'))
 
 print("Model file executed successfully")
